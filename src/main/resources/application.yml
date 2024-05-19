@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/jwt
+    username: hyxk
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+
+jwt:
+  secret: 236979CB6F1AD6B6A6184A31E6BE37DB3818CC36871E2623DED67DCFE4041342
+
+logging.level:
+  org.hibernate.SQL: debug
+  org.hibernate.type: trace
