@@ -27,6 +27,7 @@ public class UserJoinService {
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .name(dto.getName())
                 .build());
+        log.info("User {} joined", dto.getEmail());
     }
 
     //중복 회원가입 검증
