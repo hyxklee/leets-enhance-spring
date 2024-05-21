@@ -1,5 +1,6 @@
 package leets.enhance.service;
 
+import leets.enhance.config.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,12 +13,13 @@ import org.springframework.stereotype.Service;
 public class UserLoginService {
 
     private final AuthenticationManager authenticationManager;
+    private final JWTUtil jwtUtil;
 
-    public void login(String email, String password) {
+    public String login(String email, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
         authenticationManager.authenticate(authenticationToken);
         log.info("login success");
-//        String accessToken = jwtUtil.createAccessToken(userid);
-//        return accessToken;
+        String accessToken = jwtUtil.createAccessToken(email);
+        return accessToken;
     }
 }
