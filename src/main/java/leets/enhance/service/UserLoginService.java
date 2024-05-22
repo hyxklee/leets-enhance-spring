@@ -17,8 +17,9 @@ public class UserLoginService {
 
     public String login(String email, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
-        authenticationManager.authenticate(authenticationToken);
+        authenticationManager.authenticate(authenticationToken); //로그인 실패시 AuthenticationException 반환
         log.info("login success");
+
         String accessToken = jwtUtil.createAccessToken(email);
         return accessToken;
     }

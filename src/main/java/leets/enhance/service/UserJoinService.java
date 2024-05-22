@@ -32,8 +32,7 @@ public class UserJoinService {
 
     //중복 회원가입 검증
     public void validDuplicate(String email) {
-        boolean isExists = userRepository.existsByEmail(email);
-        if (isExists) {
+        if (userRepository.existsByEmail(email)) {
             log.info("User {} already exists", email);
             throw new IllegalStateException("User " + email + " already exists");
         }

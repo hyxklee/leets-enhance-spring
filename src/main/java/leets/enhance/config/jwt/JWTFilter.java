@@ -43,7 +43,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        String userEmail = jwtUtil.getUserId(token);
+        String userEmail = jwtUtil.getUserEmail(token);
 
         User user = User.builder()
                 .email(userEmail)

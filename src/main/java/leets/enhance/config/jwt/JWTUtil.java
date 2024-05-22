@@ -30,8 +30,8 @@ public class JWTUtil {
     }
 
     //토근 검증
-    public String getUserId(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userid", String.class);
+    public String getUserEmail(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
     }
 
     public Boolean isExpired(String token) {
