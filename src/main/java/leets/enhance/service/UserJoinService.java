@@ -1,5 +1,6 @@
 package leets.enhance.service;
 
+import leets.enhance.config.jwt.JWTUtil;
 import leets.enhance.domain.User;
 import leets.enhance.dto.UserJoinDTO;
 import leets.enhance.repository.UserRepository;
@@ -15,6 +16,7 @@ public class UserJoinService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JWTUtil jwtUtil;
 
     public void join(UserJoinDTO dto) {
         //기존에 존재하는 회원인지 검증
@@ -37,6 +39,16 @@ public class UserJoinService {
             throw new IllegalStateException("User " + email + " already exists");
         }
     }
+
+//    //중복 검증 고치기
+//    public void validDuplicateEmail(String token, String email) {
+//        String userEmail = jwtUtil.getUserEmail(token);
+//        User user = userRepository.findByEmail(email);
+//        if (user != null) {
+//            log.info("User {} already exists", email);
+//            throw new IllegalStateException("User " + email + " already exists");
+//        }
+//    }
 
     //비밀번호 2차 검증
     public void validPasswordInput(UserJoinDTO dto) {

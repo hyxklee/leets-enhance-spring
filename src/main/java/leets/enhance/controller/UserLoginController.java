@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -25,6 +24,7 @@ public class UserLoginController {
     @PostMapping("/users/login")
     public ResponseEntity<String> loginUser(@RequestBody UserLoinDTO dto) {
         try {
+            //토큰은 바디에 넣어줘도 됨 dto 파서 바디에 넣어주기. 유저 이메일도 같이
             String token = userLoginService.login(dto.getEmail(), dto.getPassword());
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + token);

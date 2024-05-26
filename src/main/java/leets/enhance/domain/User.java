@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "USER_ID")
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -28,6 +30,9 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     private String name;
+
+    @OneToMany(mappedBy = "user")
+    private List<Item> items = new ArrayList<>();
 
     @Builder
     public User(String email, String password, String name) {

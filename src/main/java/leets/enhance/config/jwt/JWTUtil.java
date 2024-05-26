@@ -19,10 +19,10 @@ public class JWTUtil {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
     //토큰 발급
-    public String createAccessToken(String userid) {
+    public String createAccessToken(String email) {
 
         return Jwts.builder()
-                .claim("userid", userid)
+                .claim("email", email)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))//30분
                 .signWith(secretKey)

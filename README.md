@@ -13,13 +13,13 @@ POST /users/login - 로그인
 GET /users/check-duplicate-id - id 중복 확인
 
 POST /items- 아이템 추가
-
+아이템 추가하면 사용자와 매핑해서 정보 조회
 POST /enhance - 강화하기
 
 GET /enhance - 강화 결과 조회
 
 GET /items - 내 아이템 조회
-
+토큰, 세션 기반으로 사용자 정보 가져와서 사용자와 매핑된 아이템 정보 조회
 GET /items/top10 - 상위 10개 아이템 조회
 
 위 API 명세서는 가이드이며, 원한다면 수정하거나, 추가해도 됩니다.

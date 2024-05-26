@@ -19,8 +19,9 @@ public class UserJoinController {
         return ResponseEntity.ok("User registered successfully");
     }
 
+    //고치기
     @GetMapping("/users/check-duplicate-id")
-    public ResponseEntity<String> checkDuplicateId(UserJoinDTO dto){
+    public ResponseEntity<String> checkDuplicateId(@RequestBody UserJoinDTO dto){
         try {
             userJoinService.validDuplicate(dto.getEmail());
         } catch (IllegalStateException e){
