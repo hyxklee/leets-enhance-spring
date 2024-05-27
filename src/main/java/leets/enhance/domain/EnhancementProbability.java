@@ -25,7 +25,4 @@ public enum EnhancementProbability {
         this.probability = probability;
     }
 
-    public double getProbability() {
-        return probability;
-    }
 }
