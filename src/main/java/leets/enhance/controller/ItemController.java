@@ -2,6 +2,7 @@ package leets.enhance.controller;
 
 import io.jsonwebtoken.MalformedJwtException;
 import leets.enhance.dto.ItemDTO;
+import leets.enhance.dto.ResponseItemDTO;
 import leets.enhance.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,15 +34,15 @@ public class ItemController {
     }
 
     @PostMapping("/enhance")
-    public ResponseEntity<String> enhanceItem(@RequestHeader("Authorization") String token, @RequestBody ItemDTO dto) {
+    public ResponseEntity<ResponseItemDTO> enhanceItem(@RequestHeader("Authorization") String token, @RequestBody ItemDTO dto) {
         try {
             String jwtToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token.trim();
-            itemService.enhanceItem(jwtToken, dto);
-            return ResponseEntity.ok().build();
+            ResponseItemDTO responseItemDTO = itemService.enhanceItem(jwtToken, dto);
+            return ResponseEntity.ok().body(responseItemDTO);
         } catch (MalformedJwtException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid JWT token");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }

@@ -1,13 +1,10 @@
 package leets.enhance.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Getter
+@Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Item {
 
@@ -15,7 +12,7 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "USER_ID")
     private User user;
 
@@ -23,10 +20,13 @@ public class Item {
 
     private ItemLevel level;
 
+    private ItemStatus itemStatus;
+
     @Builder
-    public Item(User user, String itemName, ItemLevel level) {
+    public Item(User user, String itemName, ItemLevel level, ItemStatus itemStatus) {
         this.user = user;
         this.itemName = itemName;
         this.level = level;
+        this.itemStatus = itemStatus;
     }
 }

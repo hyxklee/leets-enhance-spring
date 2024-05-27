@@ -13,7 +13,11 @@ public enum EnhancementProbability {
     LEVEL_6(0.03),
     LEVEL_7(0.03),
     LEVEL_8(0.03),
-    LEVEL_9(0.03);
+    LEVEL_9(0.03),
+    LEVEL_10(0.03),
+    LEVEL_11(0.03),
+    LEVEL_12(0.03),
+    LEVEL_13(0.03);
 
     private final double probability;
 

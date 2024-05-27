@@ -1,5 +1,8 @@
 package leets.enhance.domain;
 
+import lombok.Getter;
+
+@Getter
 public enum ItemLevel {
     DESTROYED(0, "Item is destroyed"),
     LEVEL_1(1, "Level 1"),
@@ -11,7 +14,10 @@ public enum ItemLevel {
     LEVEL_7(7, "Level 7"),
     LEVEL_8(8, "Level 8"),
     LEVEL_9(9, "Level 9"),
-    LEVEL_10(10, "Level 10");
+    LEVEL_10(10, "Level 10"),
+    LEVEL_11(10, "Level 11"),
+    LEVEL_12(10, "Level 12"),
+    LEVEL_13(10, "Level 13");
 
     private final int level;
     private final String description;
