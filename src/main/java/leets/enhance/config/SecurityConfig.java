@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests((auth)->auth
-                        .requestMatchers("/users/login", "/users/register",
+                        .requestMatchers("/users/login", "/users/register","/items/top10",
                                 "/users/check-duplicate-id",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",

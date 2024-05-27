@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -87,8 +89,31 @@ public class ItemService {
         return item.getItemStatus();
     }
 
+    public ResponseItemDTO findItem(String token) {
+        User user = getUserByToken(token);
+        ResponseItemDTO dtoResponse = new ResponseItemDTO();
+        Item item = itemRepository.findByUser(user);
+        dtoResponse.setItemName(item.getItemName());
+        dtoResponse.setLevel(item.getLevel());
+        dtoResponse.setItemStatus(ItemStatus.SUCCESS);
+        return dtoResponse;
+    }
+
     private User getUserByToken(String token) {
         String userEmail = jwtUtil.getUserEmail(token);
         return userRepository.findByEmail(userEmail);
+    }
+
+    public List<ResponseItemDTO> getTop10Items() {
+        List<Item> top10ByOrderByLevelDesc = itemRepository.findTop10ByOrderByLevelDesc();
+        List<ResponseItemDTO> responseItemDTOS = new ArrayList<>();
+        for (Item item : top10ByOrderByLevelDesc) {
+            ResponseItemDTO responseItemDTO = new ResponseItemDTO();
+            responseItemDTO.setItemName(item.getItemName());
+            responseItemDTO.setLevel(item.getLevel());
+            responseItemDTO.setItemStatus(ItemStatus.SUCCESS);
+            responseItemDTOS.add(responseItemDTO);
+        }
+        return responseItemDTOS;
     }
 }
