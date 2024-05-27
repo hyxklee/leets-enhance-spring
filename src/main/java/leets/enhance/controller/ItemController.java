@@ -34,10 +34,10 @@ public class ItemController {
     }
 
     @PostMapping("/enhance")
-    public ResponseEntity<ResponseItemDTO> enhanceItem(@RequestHeader("Authorization") String token, @RequestBody ItemDTO dto) {
+    public ResponseEntity<ResponseItemDTO> enhanceItem(@RequestHeader("Authorization") String token) {
         try {
             String jwtToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token.trim();
-            ResponseItemDTO responseItemDTO = itemService.enhanceItem(jwtToken, dto);
+            ResponseItemDTO responseItemDTO = itemService.enhanceItem(jwtToken);
             return ResponseEntity.ok().body(responseItemDTO);
         } catch (MalformedJwtException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);

@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum ItemLevel {
-    DESTROYED(0, "Item is destroyed"),
+    LEVEL_0(0, "Item is destroyed"),
     LEVEL_1(1, "Level 1"),
     LEVEL_2(2, "Level 2"),
     LEVEL_3(3, "Level 3"),

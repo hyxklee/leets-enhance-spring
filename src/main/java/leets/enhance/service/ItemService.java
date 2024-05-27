@@ -4,6 +4,7 @@ import leets.enhance.config.jwt.JWTUtil;
 import leets.enhance.domain.*;
 import leets.enhance.dto.ItemDTO;
 import leets.enhance.dto.ResponseItemDTO;
+import leets.enhance.exception.ItemLevelZeroException;
 import leets.enhance.repository.ItemRepository;
 import leets.enhance.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,30 +37,35 @@ public class ItemService {
     }
 
     //아이템 강화
-    public ResponseItemDTO enhanceItem(String token, ItemDTO dto) {
-        String userEmail = jwtUtil.getUserEmail(token);
-        User user = userRepository.findByEmail(userEmail);
+    public ResponseItemDTO enhanceItem(String token) {
+        User user = getUserByToken(token);
         ResponseItemDTO dtoResponse = new ResponseItemDTO();
-        Item item = itemRepository.findItemByUserAndItemName(user, dto.getItemName());
-        ItemLevel level = item.getLevel();
-        EnhancementProbability probability = EnhancementProbability.valueOf("LEVEL_" + level.getLevel());
 
-        boolean isSuccess = random.nextDouble() < probability.getProbability();
-        if (isSuccess) {
-            item.setLevel(ItemLevel.valueOf("LEVEL_" + (level.getLevel() + 1)));
-            dtoResponse.setItemStatus(ItemStatus.SUCCESS);
-        } else {
-            ItemStatus status = destroyItem(user, dto.getItemName());
-            dtoResponse.setItemStatus(status);
+        Item item = itemRepository.findByUser(user);
+        ItemLevel level = item.getLevel();
+
+        EnhancementProbability probability = EnhancementProbability.valueOf("LEVEL_" + level.getLevel());
+        boolean isSuccess = random.nextDouble() < probability.getProbability(); //난수 발생
+        try {
+            if (isSuccess) {
+                item.setLevel(ItemLevel.valueOf("LEVEL_" + (level.getLevel() + 1)));
+                dtoResponse.setItemStatus(ItemStatus.SUCCESS);
+            } else {
+                ItemStatus status = destroyItem(user);
+                dtoResponse.setItemStatus(status);
+            }
+        } catch (ItemLevelZeroException e){
+            dtoResponse.setItemStatus(ItemStatus.DESTROY);
         }
         dtoResponse.setItemName(item.getItemName());
         dtoResponse.setLevel(item.getLevel());
         itemRepository.save(item);
+        log.info("Enhanced Item: {}", item);
         return dtoResponse;
     }
 
-    public ItemStatus destroyItem(User user, String itemName) {
-        Item item = itemRepository.findItemByUserAndItemName(user,itemName);
+    public ItemStatus destroyItem(User user) {
+        Item item = itemRepository.findByUser(user);
         ItemLevel level = item.getLevel();
         DestroyProbability probability = DestroyProbability.valueOf("LEVEL_" + level.getLevel());
 
@@ -69,12 +75,20 @@ public class ItemService {
         if (isDestroyed) {
             item.setLevel(ItemLevel.valueOf("LEVEL_" + 0));
             item.setItemStatus(ItemStatus.DESTROY);
+            log.info("Destroyed Item: {}", item);
+            throw new ItemLevelZeroException("Item level has dropped to zero and the item is destroyed.");
         } else {
             if(level.getLevel() > 0) {
                 item.setLevel(ItemLevel.valueOf("LEVEL_" + (level.getLevel() - 1)));
                 item.setItemStatus(ItemStatus.FAIL);
+                log.info("Fail to enhance Item: {}", item);
             }
         }
         return item.getItemStatus();
+    }
+
+    private User getUserByToken(String token) {
+        String userEmail = jwtUtil.getUserEmail(token);
+        return userRepository.findByEmail(userEmail);
     }
 }
