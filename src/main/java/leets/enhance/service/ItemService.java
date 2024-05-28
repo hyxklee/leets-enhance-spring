@@ -3,6 +3,7 @@ package leets.enhance.service;
 import leets.enhance.config.jwt.JWTUtil;
 import leets.enhance.domain.*;
 import leets.enhance.dto.ItemDTO;
+import leets.enhance.dto.RequestBoost;
 import leets.enhance.dto.ResponseItemDTO;
 import leets.enhance.exception.ItemLevelZeroException;
 import leets.enhance.repository.ItemRepository;
@@ -39,15 +40,24 @@ public class ItemService {
     }
 
     //아이템 강화
-    public ResponseItemDTO enhanceItem(String token) {
+    public ResponseItemDTO enhanceItem(String token, RequestBoost dto) {
         User user = getUserByToken(token);
         ResponseItemDTO dtoResponse = new ResponseItemDTO();
 
         Item item = itemRepository.findByUser(user);
         ItemLevel level = item.getLevel();
 
+        double generateProbability = random.nextDouble();
         EnhancementProbability probability = EnhancementProbability.valueOf("LEVEL_" + level.getLevel());
-        boolean isSuccess = random.nextDouble() < probability.getProbability(); //난수 발생
+        if(dto.isUseBoost()){
+            if(user.getBoostCount()>0) {
+                user.setBoostCount(user.getBoostCount() - 1);
+                generateProbability += generateProbability + 0.1;
+            } else {
+                throw new IllegalStateException("Boost count is zero");
+            }
+        }
+        boolean isSuccess = generateProbability < probability.getProbability(); //난수 발생
         try {
             if (isSuccess) {
                 item.setLevel(ItemLevel.valueOf("LEVEL_" + (level.getLevel() + 1)));

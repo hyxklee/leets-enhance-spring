@@ -28,6 +28,7 @@ public class UserJoinService {
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .name(dto.getName())
+                .boostCount(3)
                 .build());
         log.info("User {} joined", dto.getEmail());
     }

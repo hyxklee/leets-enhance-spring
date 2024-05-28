@@ -3,6 +3,7 @@ package leets.enhance.domain;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,6 +15,7 @@ import java.util.List;
 @Table(name = "users")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class User implements UserDetails {
 
     @Id
@@ -33,11 +35,18 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user")
     private Item item;
 
+    private int boostCount;
+
+    public void setBoostCount(int boostCount) {
+        this.boostCount = boostCount;
+    }
+
     @Builder
-    public User(String email, String password, String name) {
+    public User(String email, String password, String name, int boostCount) {
         this.email = email;
         this.password = password;
         this.name = name;
+        this.boostCount = boostCount;
     }
 
     @Override
