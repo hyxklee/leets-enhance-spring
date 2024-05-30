@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,9 +39,9 @@ public class UserLoginController {
         }
         return ResponseEntity.badRequest().build();
     }
-
-    @GetMapping("/")
-    public ResponseEntity<String> getCurrentUser() {
-        return ResponseEntity.ok("인증됨");
-    }
+//    토큰 인증 테스트용 API
+//    @GetMapping("/")
+//    public ResponseEntity<String> getCurrentUser() {
+//        return ResponseEntity.ok("인증됨");
+//    }
 }
