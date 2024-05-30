@@ -4,7 +4,6 @@ import leets.enhance.dto.UserLoinDTO;
 import leets.enhance.service.UserLoginService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
@@ -24,11 +23,8 @@ public class UserLoginController {
     @PostMapping("/users/login")
     public ResponseEntity<String> loginUser(@RequestBody UserLoinDTO dto) {
         try {
-            //토큰은 바디에 넣어줘도 됨 dto 파서 바디에 넣어주기. 유저 이메일도 같이
             String token = userLoginService.login(dto.getEmail(), dto.getPassword());
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization", "Bearer " + token);
-            return ResponseEntity.ok().headers(headers).build();
+            return ResponseEntity.ok("Bearer "+token +"\n"+ dto.getEmail());
         } catch (AuthenticationException e) {
             String errorMessage;
             if (e instanceof UsernameNotFoundException) {

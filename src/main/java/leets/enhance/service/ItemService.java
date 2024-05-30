@@ -10,10 +10,12 @@ import leets.enhance.repository.ItemRepository;
 import leets.enhance.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -29,7 +31,13 @@ public class ItemService {
     //아이템 등록
     public void registerItem(String token, ItemDTO dto) {
         String userEmail = jwtUtil.getUserEmail(token);
-        User user = userRepository.findByEmail(userEmail);
+        Optional<User> optionalUser = userRepository.findByEmail(userEmail);
+        User user;
+        if (optionalUser.isPresent()) {
+            user = optionalUser.get();
+        } else {
+            throw new UsernameNotFoundException("User not found");
+        }
 
         itemRepository.save(Item.builder()
                 .user(user)
@@ -42,15 +50,22 @@ public class ItemService {
     //아이템 강화
     public ResponseItemDTO enhanceItem(String token, RequestBoost dto) {
         User user = getUserByToken(token);
-        ResponseItemDTO dtoResponse = new ResponseItemDTO();
 
-        Item item = itemRepository.findByUser(user);
+        Optional<Item> optionalItem = itemRepository.findByUser(user);
+        Item item;
+        if (optionalItem.isPresent()) {
+            item = optionalItem.get();
+        } else {
+            throw new UsernameNotFoundException("user not found");
+        }
+
+        ResponseItemDTO dtoResponse = ResponseItemDTO.builder().build();
         ItemLevel level = item.getLevel();
 
         double generateProbability = random.nextDouble();
         EnhancementProbability probability = EnhancementProbability.valueOf("LEVEL_" + level.getLevel());
-        if(dto.isUseBoost()){
-            if(user.getBoostCount()>0) {
+        if (dto.isUseBoost()) {
+            if (user.getBoostCount() > 0) {
                 user.setBoostCount(user.getBoostCount() - 1);
                 generateProbability += generateProbability + 0.1;
             } else {
@@ -60,14 +75,14 @@ public class ItemService {
         boolean isSuccess = generateProbability < probability.getProbability(); //난수 발생
         try {
             if (isSuccess) {
-                item.setLevel(ItemLevel.valueOf("LEVEL_" + (level.getLevel() + 1)));
-                dtoResponse.setItemStatus(ItemStatus.SUCCESS);
+                item.updateItemLevel(ItemLevel.valueOf("LEVEL_" + (level.getLevel() + 1)));
+                dtoResponse.updateItemStatus(ItemStatus.SUCCESS);
             } else {
                 ItemStatus status = destroyItem(user);
-                dtoResponse.setItemStatus(status);
+                dtoResponse.updateItemStatus(status);
             }
-        } catch (ItemLevelZeroException e){
-            dtoResponse.setItemStatus(ItemStatus.DESTROY);
+        } catch (ItemLevelZeroException e) {
+            dtoResponse.updateItemStatus(ItemStatus.DESTROY);
         }
         dtoResponse.setItemName(item.getItemName());
         dtoResponse.setLevel(item.getLevel());
@@ -77,7 +92,14 @@ public class ItemService {
     }
 
     public ItemStatus destroyItem(User user) {
-        Item item = itemRepository.findByUser(user);
+        Optional<Item> optionalItem = itemRepository.findByUser(user);
+        Item item;
+        if (optionalItem.isPresent()) {
+            item = optionalItem.get();
+        } else {
+            throw new UsernameNotFoundException("user not found");
+        }
+
         ItemLevel level = item.getLevel();
         DestroyProbability probability = DestroyProbability.valueOf("LEVEL_" + level.getLevel());
 
@@ -85,14 +107,14 @@ public class ItemService {
         boolean isDestroyed = random.nextDouble() < probability.getProbability();
 
         if (isDestroyed) {
-            item.setLevel(ItemLevel.valueOf("LEVEL_" + 0));
-            item.setItemStatus(ItemStatus.DESTROY);
+            item.updateItemLevel(ItemLevel.valueOf("LEVEL_" + 0));
+            item.updateItemStatus(ItemStatus.DESTROY);
             log.info("Destroyed Item: {}", item);
             throw new ItemLevelZeroException("Item level has dropped to zero and the item is destroyed.");
         } else {
             if(level.getLevel() > 0) {
-                item.setLevel(ItemLevel.valueOf("LEVEL_" + (level.getLevel() - 1)));
-                item.setItemStatus(ItemStatus.FAIL);
+                item.updateItemLevel(ItemLevel.valueOf("LEVEL_" + (level.getLevel() - 1)));
+                item.updateItemStatus(ItemStatus.FAIL);
                 log.info("Fail to enhance Item: {}", item);
             }
         }
@@ -101,27 +123,43 @@ public class ItemService {
 
     public ResponseItemDTO findItem(String token) {
         User user = getUserByToken(token);
-        ResponseItemDTO dtoResponse = new ResponseItemDTO();
-        Item item = itemRepository.findByUser(user);
-        dtoResponse.setItemName(item.getItemName());
-        dtoResponse.setLevel(item.getLevel());
-        dtoResponse.setItemStatus(ItemStatus.SUCCESS);
+        Optional<Item> optionalItem = itemRepository.findByUser(user);
+        Item item;
+        if (optionalItem.isPresent()) {
+            item = optionalItem.get();
+        } else {
+            throw new UsernameNotFoundException("user not found");
+        }
+
+        ResponseItemDTO dtoResponse = ResponseItemDTO.builder()
+                .itemName(item.getItemName())
+                .level(item.getLevel())
+                .itemStatus(ItemStatus.SUCCESS)
+                .build();
         return dtoResponse;
     }
 
     private User getUserByToken(String token) {
         String userEmail = jwtUtil.getUserEmail(token);
-        return userRepository.findByEmail(userEmail);
+        Optional<User> optionalUser = userRepository.findByEmail(userEmail);
+        User user;
+        if (optionalUser.isPresent()) {
+            user = optionalUser.get();
+        } else {
+            throw new UsernameNotFoundException("User not found");
+        }
+        return user;
     }
 
     public List<ResponseItemDTO> getTop10Items() {
         List<Item> top10ByOrderByLevelDesc = itemRepository.findTop10ByOrderByLevelDesc();
         List<ResponseItemDTO> responseItemDTOS = new ArrayList<>();
         for (Item item : top10ByOrderByLevelDesc) {
-            ResponseItemDTO responseItemDTO = new ResponseItemDTO();
-            responseItemDTO.setItemName(item.getItemName());
-            responseItemDTO.setLevel(item.getLevel());
-            responseItemDTO.setItemStatus(ItemStatus.SUCCESS);
+            ResponseItemDTO responseItemDTO = ResponseItemDTO.builder()
+                    .itemName(item.getItemName())
+                    .itemStatus(ItemStatus.SUCCESS)
+                    .level(item.getLevel())
+                    .build();
             responseItemDTOS.add(responseItemDTO);
         }
         return responseItemDTOS;

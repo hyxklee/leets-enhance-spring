@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Getter @Setter
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Item {
 
@@ -27,6 +27,14 @@ public class Item {
         this.user = user;
         this.itemName = itemName;
         this.level = level;
+        this.itemStatus = itemStatus;
+    }
+
+    public void updateItemLevel(ItemLevel level) {
+        this.level = level;
+    }
+
+    public void updateItemStatus(ItemStatus itemStatus) {
         this.itemStatus = itemStatus;
     }
 }
