@@ -4,7 +4,7 @@ spring:
 #    url: jdbc:mysql://localhost:3306
     username: root
     password: ${{ secrets.RDS_USER_PW }}
-#    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
