@@ -3,7 +3,7 @@ spring:
     url: jdbc:mysql://leets-hyxk-db.c1ew6csq2gem.ap-northeast-2.rds.amazonaws.com:3306/enhance_db
 #    url: jdbc:mysql://localhost:3306
     username: root
-    password: ${{ secrets.RDS_USER_PW }}
+    password: ${RDS_USER_PW}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
