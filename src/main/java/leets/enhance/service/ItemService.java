@@ -68,6 +68,7 @@ public class ItemService {
             if (user.getBoostCount() > 0) {
                 user.setBoostCount(user.getBoostCount() - 1);
                 generateProbability += generateProbability + 0.1;
+                dtoResponse.setProbability(probability);
             } else {
                 throw new IllegalStateException("Boost count is zero");
             }

@@ -1,5 +1,6 @@
 package leets.enhance.dto;
 
+import leets.enhance.domain.EnhancementProbability;
 import leets.enhance.domain.ItemLevel;
 import leets.enhance.domain.ItemStatus;
 import lombok.Builder;
@@ -14,6 +15,8 @@ public class ResponseItemDTO {
     private ItemLevel level;
 
     private ItemStatus itemStatus;
+
+    private EnhancementProbability probability;
 
     public void updateItemStatus(ItemStatus itemStatus) {
         this.itemStatus = itemStatus;
