@@ -20,4 +20,4 @@ else
 fi
 
 echo "> Deploy - $JAR_PATH "
-nohup java -jar $JAR_PATH > $LOG_PATH 2>&1 < /dev/null &
+nohup java -jar $JAR_PATH > $LOG_PATH 2>&1 < /djev/null &
