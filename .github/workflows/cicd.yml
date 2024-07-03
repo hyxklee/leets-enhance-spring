@@ -41,7 +41,6 @@ jobs:
 
       # 도커 이미지 생성 후 이미지 push
       - name: Docker build & push to dev
-        if: contains(github.ref, 'develop')
         run: |
           docker login -u ${{ secrets.DOCKER_USER_NAME }} -p ${{ secrets.DOCKER_USER_PW }}
           docker build -f Dockerfile-dev -t hyxklee/hyxklee-test .
