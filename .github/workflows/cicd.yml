@@ -30,33 +30,32 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            ~/.gradle/caches  
+            ~/.gradle/caches
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
-            ${{ runner.os }}-gradle-  
+            ${{ runner.os }}-gradle-
 
       - name: Build with Gradle Wrapper
         run: ./gradlew build
 
-      - name: Make Zip File
-        run: zip -qq -r ./$GITHUB_SHA.zip .
-        shell: bash
+      # 도커 이미지 생성 후 이미지 push
+      - name: Docker build & push to dev
+        if: contains(github.ref, 'develop')
+        run: |
+          docker login -u ${{ DOCKER_USER_NAME }} -p ${{ DOCKER_USER_PW }}
+          docker build -f Dockerfile-dev -t hyxklee/hyxklee-test .
+          docker push hyxklee/hyxklee-test
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+    #EC2 ssh 연결 후 이미지 pull
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_PRIVATE_ACCESS_KEY }}
-          aws-region: ap-northeast-2
-
-      - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
-
-
-      - name: Code Deploy To EC2 instance
-        run: aws deploy create-deployment
-          --application-name $CODE_DEPLOY_APP_NAME
-          --deployment-config-name CodeDeployDefault.AllAtOnce
-          --deployment-group-name $DEPLOYMENT_GROUP_NAME
-          --s3-location bucket=$BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          key: ${{ secrets.KEY }}
+          envs: GITHUB_SHA
+        script: |
+          sudo docker rm -f $(docker ps -qa)
+          sudo docker pull hyxklee/hyxklee-test
+          sudo docker run --name spring -d -p 8080:8080 -e RDS_USER_NAME=${{ RDS_USER_NAME }} -e RDS_USER_PW=${{ RDS_USER_PW }} hyxklee/hyxklee-test
