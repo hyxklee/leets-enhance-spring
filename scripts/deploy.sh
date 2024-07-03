@@ -20,4 +20,5 @@ else
 fi
 
 echo "> Deploy - $JAR_PATH "
+source ~/.bashrc
 nohup java -jar $JAR_PATH > $LOG_PATH 2>&1 < /dev/null &
