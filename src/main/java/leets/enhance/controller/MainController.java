@@ -1,7 +1,10 @@
 package leets.enhance.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
+
 public class MainController {
-    public String main(){
+    @GetMapping("/main")
+    public String hello(){
         return "Hello World!";
     }
 }

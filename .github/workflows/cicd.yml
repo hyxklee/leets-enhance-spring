@@ -6,9 +6,6 @@ on:
 
 env:
   PROJECT_NAME: leets_hyuk_project
-  BUCKET_NAME: leets-hyxk-cd
-  CODE_DEPLOY_APP_NAME: hyxk-cd
-  DEPLOYMENT_GROUP_NAME: leets-hyxk-cd-instance
 
 jobs:
   build:
