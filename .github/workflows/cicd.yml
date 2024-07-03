@@ -4,9 +4,6 @@ on:
   push:
     branches: [ "hyxklee" ]
 
-env:
-  PROJECT_NAME: leets_hyuk_project
-
 jobs:
   build:
 
@@ -29,7 +26,7 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*gradle*','**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
 
@@ -52,6 +49,17 @@ jobs:
           key: ${{ secrets.EC2_SECRET_PEM }}
           envs: GITHUB_SHA
           script: |
-            sudo docker rm -f $(docker ps -qa)
+            EXISTING_CONTAINER_ID=$(sudo docker ps -q -f "publish=8080" -f "status=running")
+            if [ ! -z "$EXISTING_CONTAINER_ID" ]; then
+              sudo docker stop $EXISTING_CONTAINER_ID
+              sudo docker rm $EXISTING_CONTAINER_ID
+            fi
+
+            EXISTING_CONTAINER_ID=$(sudo docker ps -q -f "publish=8080" -f "status=exited")
+            if [ ! -z "$EXISTING_CONTAINER_ID" ]; then
+              sudo docker rm $EXISTING_CONTAINER_ID
+            fi
+            
             sudo docker pull hyxklee/hyxklee-test
             sudo docker run --name spring -d -p 8080:8080 -e RDS_USER_NAME=${{ secrets.RDS_USER_NAME }} -e RDS_USER_PW=${{ secrets.RDS_USER_PW }} hyxklee/hyxklee-test
+            sudo docker image prune -a -f
