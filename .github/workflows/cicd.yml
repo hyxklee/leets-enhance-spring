@@ -43,7 +43,7 @@ jobs:
       - name: Docker build & push to dev
         if: contains(github.ref, 'develop')
         run: |
-          docker login -u ${{ DOCKER_USER_NAME }} -p ${{ DOCKER_USER_PW }}
+          docker login -u ${{ secrets.DOCKER_USER_NAME }} -p ${{ secrets.DOCKER_USER_PW }}
           docker build -f Dockerfile-dev -t hyxklee/hyxklee-test .
           docker push hyxklee/hyxklee-test
 
@@ -51,11 +51,11 @@ jobs:
       - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }}
+          host: ${{ secrets.EC2_SECRET_HOST }}
           username: ubuntu
-          key: ${{ secrets.KEY }}
+          key: ${{ secrets.EC2_SECRET_PEM }}
           envs: GITHUB_SHA
           script: |
             sudo docker rm -f $(docker ps -qa)
             sudo docker pull hyxklee/hyxklee-test
-            sudo docker run --name spring -d -p 8080:8080 -e RDS_USER_NAME=${{ RDS_USER_NAME }} -e RDS_USER_PW=${{ RDS_USER_PW }} hyxklee/hyxklee-test
+            sudo docker run --name spring -d -p 8080:8080 -e RDS_USER_NAME=${{ secrets.RDS_USER_NAME }} -e RDS_USER_PW=${{ secrets.RDS_USER_PW }} hyxklee/hyxklee-test
