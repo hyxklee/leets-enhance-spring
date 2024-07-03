@@ -43,7 +43,7 @@ jobs:
       - name: Docker build & push to dev
         run: |
           docker login -u ${{ secrets.DOCKER_USER_NAME }} -p ${{ secrets.DOCKER_USER_PW }}
-          docker build -f Dockerfile-dev -t hyxklee/hyxklee-test .
+          docker build -t hyxklee/hyxklee-test .
           docker push hyxklee/hyxklee-test
 
     #EC2 ssh 연결 후 이미지 pull
