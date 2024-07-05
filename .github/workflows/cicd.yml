@@ -61,5 +61,5 @@ jobs:
             fi
             
             sudo docker pull hyxklee/hyxklee-test
-            sudo docker run --name spring -d -p 8080:8080 hyxklee/hyxklee-test
+            sudo docker run --name spring -d -p 8080:8080 -e RDS_USER_NAME=${{ secrets.RDS_USER_NAME }} -e RDS_USER_PW=${{ secrets.RDS_USER_PW }} hyxklee/hyxklee-test
             sudo docker image prune -a -f
