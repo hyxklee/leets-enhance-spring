@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:mysql://leets-hyxk-db.c1ew6csq2gem.ap-northeast-2.rds.amazonaws.com:3306/enhance
+    username: ${secrets.RDS_USER_NAME}
+    password: ${secrets.RDS_USER_PW}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+jwt:
+  secret: 236979CB6F1AD6B6A6184A31E6BE37DB3818CC36871E2623DED67DCFE4041342
+
+logging.level:
+  org.hibernate.SQL: debug
+  org.hibernate.type: trace
